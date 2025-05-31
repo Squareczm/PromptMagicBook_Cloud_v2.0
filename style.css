@@ -62,10 +62,10 @@
 
 /* 基本样式 */
 body {
-    font-family: 'Inter', sans-serif; /* 统一字体，与index.html一致 */
+    font-family: -webkit-system-font, "SF Pro Display", "SF Pro Text", "Helvetica Neue", "Helvetica", "Arial", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "微软雅黑", sans-serif; /* 苹果系统字体优先 */
     background-color: #f0f4f8;
-    color: #334155;
-    line-height: 1.6;
+    color: #1d1d1f; /* 苹果风格的深色文字 */
+    line-height: 1.47059; /* 苹果风格的行高 */
     margin: 0;
     padding: 0; /* 移除body的padding */
     display: flex;
@@ -75,12 +75,17 @@ body {
     box-sizing: border-box;
     width: 100%; /* 让body宽度占满视口 */
     min-height: 400px; /* 1. 设定标准化的插件窗口尺寸 */
+    font-weight: 400; /* 苹果风格的正常字重 */
+    -webkit-font-smoothing: antialiased; /* 苹果风格的字体抗锯齿 */
+    -moz-osx-font-smoothing: grayscale;
 }
 
 /* 确保所有主要文本元素继承统一字体 */
 h1, h2, h3, h4, h5, h6,
 p, a, span, div, button, input, textarea, select, option, label {
     font-family: inherit; /* 继承body的字体 */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 #app-container {
@@ -105,24 +110,27 @@ header {
 
 header h1 {
     font-size: 1.875rem; /* text-3xl */
-    font-weight: 700; /* font-bold */
+    font-weight: 600; /* 苹果风格的标题字重 */
     color: #4f46e5; /* 插件主题蓝色 */
     margin-bottom: 8px; /* 为副标题留出空间 */
+    letter-spacing: -0.003em; /* 苹果风格的字符间距 */
 }
 
 header p {
-    color: #6b7280; /* 5. 副标题颜色较浅 (gray-500) */
+    color: #86868b; /* 苹果风格的副标题颜色 */
     font-size: 0.875rem; /* 5. 副标题字号较小 (text-sm) */
     margin-top: 0; /* 调整与主标题的间距 */
     text-align: center; /* 5. 副标题居中 */
+    font-weight: 400;
+    letter-spacing: -0.016em;
 }
 
 main h2, #form-title {
     font-size: 1.25rem;
-    font-weight: 600;
+    font-weight: 600; /* 苹果风格的章节标题字重 */
     margin-bottom: 20px; /* 3. 拉开元素间距 */
-    color: #374151; /* (gray-700) */
-    /* text-align: left; 保持左对齐 */
+    color: #1d1d1f; /* 苹果风格的主要文字颜色 */
+    letter-spacing: -0.022em; /* 苹果风格的字符间距 */
 }
 
 /* 为表单各部分增加上外边距 */
@@ -180,9 +188,11 @@ textarea#prompt-input, input#tags-input {
     border: 1px solid #d1d5db; /* 4. 输入框柔和的边框颜色 (gray-300) */
     border-radius: 8px; /* 4. 输入框添加圆角 */
     font-size: 0.875rem;
-    color: #334155;
+    font-weight: 400;
+    color: #1d1d1f; /* 苹果风格的文字颜色 */
     background-color: white;
     transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out; /* 添加过渡效果 */
+    -webkit-font-smoothing: antialiased;
 }
 
 textarea#prompt-input:focus, input#tags-input:focus {
@@ -193,7 +203,7 @@ textarea#prompt-input:focus, input#tags-input:focus {
 
 /* 按钮样式 */
 .button {
-    font-weight: 500;
+    font-weight: 500; /* 苹果风格的按钮字重 */
     padding-top: 0.4rem;
     padding-bottom: 0.4rem;
     padding-left: 0.8rem;
@@ -207,6 +217,8 @@ textarea#prompt-input:focus, input#tags-input:focus {
     justify-content: center;
     gap: 0.5rem; /* space-x-2 */
     cursor: pointer;
+    letter-spacing: -0.003em; /* 苹果风格的字符间距 */
+    -webkit-font-smoothing: antialiased;
 }
 
 .button:hover {
@@ -580,4 +592,187 @@ footer {
 
 .hidden {
     display: none !important;
+}
+
+/* 搜索功能样式 */
+.search-container {
+    margin-bottom: 1rem;
+}
+
+.search-container .relative {
+    position: relative;
+}
+
+.search-container input {
+    padding-left: 2.5rem; /* 为搜索图标留出空间 */
+    padding-right: 2.5rem; /* 为清除按钮留出空间 */
+}
+
+/* 搜索输入框样式统一 */
+input#search-input {
+    box-sizing: border-box;
+    width: 100%;
+    padding: 12px; /* 与其他输入框一致的内边距 */
+    padding-left: 2.5rem; /* 为搜索图标留出空间 */
+    padding-right: 2.5rem; /* 为清除按钮留出空间 */
+    border: 1px solid #d1d5db; /* 与其他输入框一致的边框颜色 */
+    border-radius: 8px; /* 与其他输入框一致的圆角 */
+    font-size: 0.875rem;
+    font-weight: 400;
+    color: #1d1d1f; /* 苹果风格的文字颜色 */
+    background-color: white;
+    transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    -webkit-font-smoothing: antialiased;
+}
+
+input#search-input:focus {
+    outline: none;
+    border-color: #4f46e5; /* 与其他输入框一致的焦点边框颜色 */
+    box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.2); /* 与其他输入框一致的焦点阴影 */
+}
+
+.search-container .absolute {
+    position: absolute;
+}
+
+.search-container .inset-y-0 {
+    top: 0;
+    bottom: 0;
+}
+
+.search-container .left-0 {
+    left: 0;
+}
+
+.search-container .right-0 {
+    right: 0;
+}
+
+.search-container .pl-3 {
+    padding-left: 0.75rem;
+}
+
+.search-container .pr-3 {
+    padding-right: 0.75rem;
+}
+
+.search-container .flex {
+    display: flex;
+}
+
+.search-container .items-center {
+    align-items: center;
+}
+
+.search-container .pointer-events-none {
+    pointer-events: none;
+}
+
+.search-container .text-slate-400 {
+    color: #94a3b8;
+}
+
+.search-container .hover\:text-slate-600:hover {
+    color: #475569;
+}
+
+.search-container .h-5 {
+    height: 1.25rem;
+}
+
+.search-container .w-5 {
+    width: 1.25rem;
+}
+
+#clear-search {
+    background: none;
+    border: none;
+    cursor: pointer;
+    transition: color 0.2s ease-in-out;
+}
+
+#clear-search:hover {
+    color: #475569;
+}
+
+.relative {
+    position: relative;
+}
+
+.absolute {
+    position: absolute;
+}
+
+.inset-y-0 {
+    top: 0;
+    bottom: 0;
+}
+
+.left-0 {
+    left: 0;
+}
+
+.right-0 {
+    right: 0;
+}
+
+.pl-10 {
+    padding-left: 2.5rem;
+}
+
+/* Prompt展开功能样式 */
+.prompt-content {
+    position: relative;
+}
+
+.text-container {
+    line-height: 1.5;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
+.preview-text,
+.full-text {
+    display: block;
+}
+
+.ellipsis {
+    color: #6b7280;
+    font-style: italic;
+}
+
+.toggle-button {
+    display: inline-flex;
+    align-items: center;
+    margin-top: 8px;
+    padding: 4px 8px;
+    background-color: transparent;
+    border: 1px solid #d1d5db;
+    border-radius: 4px;
+    color: #4f46e5;
+    font-size: 0.75rem;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+}
+
+.toggle-button:hover {
+    background-color: #f3f4f6;
+    border-color: #4f46e5;
+}
+
+.toggle-button svg {
+    transition: transform 0.2s ease-in-out;
+}
+
+.ml-1 {
+    margin-left: 0.25rem;
+}
+
+/* 确保展开/收起图标正确显示 */
+.prompt-content .toggle-button .w-4 {
+    width: 1rem;
+}
+
+.prompt-content .toggle-button .h-4 {
+    height: 1rem;
 }

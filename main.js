@@ -9,12 +9,29 @@ document.addEventListener('DOMContentLoaded', () => {
     const noTagsPlaceholder = document.getElementById('no-tags-placeholder');
     const formTitle = document.getElementById('form-title');
     const exportJsonButton = document.getElementById('export-json-button');
-            const exportTxtButton = document.getElementById('export-txt-button');
-            const importJsonButton = document.getElementById('import-json-button');
+    const exportTxtButton = document.getElementById('export-txt-button');
+    const importJsonButton = document.getElementById('import-json-button');
+    const searchInput = document.getElementById('search-input');
+    const clearSearchButton = document.getElementById('clear-search');
 
     let prompts = JSON.parse(localStorage.getItem('prompts')) || [];
     let editingPromptId = null;
     let activeFilterTags = new Set();
+    let searchQuery = '';
+
+    // 兼容旧数据：为没有copyCount的prompt添加copyCount字段
+    function migrateDataStructure() {
+        let updated = false;
+        prompts.forEach(prompt => {
+            if (typeof prompt.copyCount === 'undefined') {
+                prompt.copyCount = 0;
+                updated = true;
+            }
+        });
+        if (updated) {
+            localStorage.setItem('prompts', JSON.stringify(prompts));
+        }
+    }
 
     // --- Toast通知 --- 
     function showToast(message, duration = 3000) {
@@ -84,19 +101,74 @@ document.addEventListener('DOMContentLoaded', () => {
         renderPrompts();
     }
 
+    // --- 搜索功能 ---
+    function performSearch() {
+        searchQuery = searchInput.value.trim().toLowerCase();
+        
+        // 显示或隐藏清除按钮
+        if (searchQuery) {
+            clearSearchButton.classList.remove('hidden');
+        } else {
+            clearSearchButton.classList.add('hidden');
+        }
+        
+        renderPrompts();
+    }
+
+    function clearSearch() {
+        searchInput.value = '';
+        searchQuery = '';
+        clearSearchButton.classList.add('hidden');
+        renderPrompts();
+    }
+
+    function matchesSearch(prompt) {
+        if (!searchQuery) return true;
+        
+        // 搜索prompt内容
+        const textMatch = prompt.text.toLowerCase().includes(searchQuery);
+        
+        // 搜索标签
+        const tagMatch = prompt.tags.some(tag => 
+            tag.toLowerCase().includes(searchQuery)
+        );
+        
+        return textMatch || tagMatch;
+    }
+
     // --- Prompt渲染 --- 
     function renderPrompts() {
         promptList.innerHTML = '';
-        const filteredPrompts = prompts.filter(prompt => {
-            if (activeFilterTags.size === 0) return true;
-            return prompt.tags.some(tag => activeFilterTags.has(tag.trim()));
+        
+        // 先过滤标签，再搜索，最后按复制次数排序
+        let filteredPrompts = prompts.filter(prompt => {
+            // 标签过滤
+            const tagFilter = activeFilterTags.size === 0 || 
+                prompt.tags.some(tag => activeFilterTags.has(tag.trim()));
+            
+            // 搜索过滤
+            const searchFilter = matchesSearch(prompt);
+            
+            return tagFilter && searchFilter;
         });
+
+        // 按复制次数降序排列（复制次数多的在前面）
+        filteredPrompts.sort((a, b) => (b.copyCount || 0) - (a.copyCount || 0));
 
         if (filteredPrompts.length === 0) {
             const li = document.createElement('li');
-            li.textContent = activeFilterTags.size > 0 ? '没有匹配当前筛选的Prompt。' : '还没有保存任何Prompt。';
-            // li.classList.add('text-slate-500', 'italic', 'p-4', 'text-center'); // 移除旧样式
-            li.classList.add('empty-state-placeholder'); // 添加新样式
+            let message = '还没有保存任何Prompt。';
+            
+            if (searchQuery && activeFilterTags.size > 0) {
+                message = '没有匹配当前搜索和筛选条件的Prompt。';
+            } else if (searchQuery) {
+                message = '没有匹配当前搜索条件的Prompt。';
+            } else if (activeFilterTags.size > 0) {
+                message = '没有匹配当前筛选的Prompt。';
+            }
+            
+            li.textContent = message;
+            li.classList.add('empty-state-placeholder');
             promptList.appendChild(li);
             return;
         }
@@ -108,7 +180,84 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const contentDiv = document.createElement('div');
             contentDiv.classList.add('prompt-content');
-            contentDiv.textContent = prompt.text;
+            
+            // 检查内容是否需要折叠
+            const lines = prompt.text.split('\n');
+            const needsCollapse = lines.length > 3 || prompt.text.length > 200;
+            
+            if (needsCollapse) {
+                // 创建完整内容和预览内容
+                const previewText = lines.slice(0, 3).join('\n');
+                const fullText = prompt.text;
+                
+                // 创建内容容器
+                const textContainer = document.createElement('div');
+                textContainer.classList.add('text-container');
+                
+                const previewSpan = document.createElement('span');
+                previewSpan.classList.add('preview-text');
+                previewSpan.textContent = previewText;
+                
+                const fullSpan = document.createElement('span');
+                fullSpan.classList.add('full-text', 'hidden');
+                fullSpan.textContent = fullText;
+                
+                const ellipsis = document.createElement('span');
+                ellipsis.classList.add('ellipsis');
+                ellipsis.textContent = '...';
+                
+                textContainer.appendChild(previewSpan);
+                textContainer.appendChild(ellipsis);
+                textContainer.appendChild(fullSpan);
+                contentDiv.appendChild(textContainer);
+                
+                // 创建展开/收起按钮
+                const toggleButton = document.createElement('button');
+                toggleButton.classList.add('toggle-button');
+                toggleButton.innerHTML = `
+                    <span class="expand-text">展开</span>
+                    <span class="collapse-text hidden">收起</span>
+                    <svg class="expand-icon w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                    <svg class="collapse-icon w-4 h-4 ml-1 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path>
+                    </svg>
+                `;
+                
+                // 添加点击事件
+                toggleButton.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const isExpanded = contentDiv.classList.contains('expanded');
+                    
+                    if (isExpanded) {
+                        // 收起
+                        contentDiv.classList.remove('expanded');
+                        previewSpan.classList.remove('hidden');
+                        ellipsis.classList.remove('hidden');
+                        fullSpan.classList.add('hidden');
+                        toggleButton.querySelector('.expand-text').classList.remove('hidden');
+                        toggleButton.querySelector('.collapse-text').classList.add('hidden');
+                        toggleButton.querySelector('.expand-icon').classList.remove('hidden');
+                        toggleButton.querySelector('.collapse-icon').classList.add('hidden');
+                    } else {
+                        // 展开
+                        contentDiv.classList.add('expanded');
+                        previewSpan.classList.add('hidden');
+                        ellipsis.classList.add('hidden');
+                        fullSpan.classList.remove('hidden');
+                        toggleButton.querySelector('.expand-text').classList.add('hidden');
+                        toggleButton.querySelector('.collapse-text').classList.remove('hidden');
+                        toggleButton.querySelector('.expand-icon').classList.add('hidden');
+                        toggleButton.querySelector('.collapse-icon').classList.remove('hidden');
+                    }
+                });
+                
+                contentDiv.appendChild(toggleButton);
+            } else {
+                // 内容较短，直接显示
+                contentDiv.textContent = prompt.text;
+            }
 
             const tagsDiv = document.createElement('div');
             tagsDiv.classList.add('prompt-tags');
@@ -119,16 +268,24 @@ document.addEventListener('DOMContentLoaded', () => {
                 tagsDiv.appendChild(tagSpan);
             });
 
+            // 添加复制次数显示
+            const copyCountSpan = document.createElement('span');
+            copyCountSpan.classList.add('copy-count');
+            copyCountSpan.textContent = `复制${prompt.copyCount || 0}次`;
+            copyCountSpan.style.color = '#6b7280';
+            copyCountSpan.style.fontSize = '0.75rem';
+            copyCountSpan.style.marginLeft = '8px';
+
             const actionsDiv = document.createElement('div');
             actionsDiv.classList.add('prompt-item-actions'); // 修改类名以匹配CSS
 
             const copyButton = createActionButton('复制', 
                 '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>',
-                () => copyPrompt(prompt.text));
+                () => copyPrompt(prompt.text, prompt.id));
             
             const oneClickCopyButton = createActionButton('一键复制', 
                 '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path></svg>',
-                () => copyPrompt(prompt.text));
+                () => copyPrompt(prompt.text, prompt.id));
 
             const editButton = createActionButton('编辑', 
                 '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>',
@@ -141,6 +298,9 @@ document.addEventListener('DOMContentLoaded', () => {
             // 创建 footer 容器
             const footerDiv = document.createElement('div');
             footerDiv.classList.add('prompt-item-footer');
+
+            // 将复制次数添加到标签区域
+            tagsDiv.appendChild(copyCountSpan);
 
             // 将 tagsDiv 和 actionsDiv 放入 footerDiv
             // 注意：确保 tagsDiv 和 actionsDiv 在此之前已正确创建和填充
@@ -189,7 +349,8 @@ document.addEventListener('DOMContentLoaded', () => {
             const newPrompt = {
                 id: Date.now(), // 使用时间戳作为简单ID
                 text: text,
-                tags: tagsArray
+                tags: tagsArray,
+                copyCount: 0 // 新增：初始化复制次数为0
             };
             prompts.push(newPrompt);
             showToast('Prompt已保存！');
@@ -236,9 +397,18 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    function copyPrompt(text) {
+    function copyPrompt(text, id) {
         navigator.clipboard.writeText(text)
-            .then(() => showToast('Prompt已复制到剪贴板！'))
+            .then(() => {
+                showToast('Prompt已复制到剪贴板！');
+                const promptIndex = prompts.findIndex(p => p.id === id);
+                if (promptIndex > -1) {
+                    prompts[promptIndex].copyCount = (prompts[promptIndex].copyCount || 0) + 1;
+                    localStorage.setItem('prompts', JSON.stringify(prompts));
+                    // 立即重新渲染以显示更新的复制次数
+                    renderPrompts();
+                }
+            })
             .catch(err => {
                 console.error('复制失败: ', err);
                 showToast('复制失败，请手动复制。', 3000);
@@ -290,8 +460,11 @@ document.addEventListener('DOMContentLoaded', () => {
     exportJsonButton.addEventListener('click', () => exportData('json'));
     exportTxtButton.addEventListener('click', () => exportData('txt'));
     importJsonButton.addEventListener('click', importDataFromJson);
+    searchInput.addEventListener('input', performSearch);
+    clearSearchButton.addEventListener('click', clearSearch);
 
     // --- 初始化 --- 
+    migrateDataStructure(); // 兼容旧数据
     renderPrompts();
     updateFilterTagButtons();
     updateExistingTagsForInput();
@@ -319,7 +492,13 @@ document.addEventListener('DOMContentLoaded', () => {
                             while(existingIds.has(newId)) { //确保ID唯一
                                 newId = Date.now() + Math.random();
                             }
-                            prompts.push({ ...importedPrompt, id: newId });
+                            // 确保导入的prompt包含copyCount字段
+                            const promptToAdd = { 
+                                ...importedPrompt, 
+                                id: newId,
+                                copyCount: importedPrompt.copyCount || 0 // 如果没有copyCount则初始化为0
+                            };
+                            prompts.push(promptToAdd);
                             existingIds.add(newId);
                             newPromptsAdded++;
                         });

@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
-  "name": "Prompt咒语书",
-  "version": "1.1",
+  "name": "Prompt魔法书",
+  "version": "1.2",
   "description": "一款浏览器插件，让用户能够高效地存储、分类和使用自己精心设计的AI提示词（Prompts）。",
   "permissions": [
     "storage"
