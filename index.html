@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="zh-CN" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prompt魔法书</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        /* 自定义滚动条样式 */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #64748b; }
+        .toast {
+            position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+            background-color: #1f2937; color: white; padding: 12px 24px;
+            border-radius: 8px; z-index: 1000; opacity: 0;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            transform: translate(-50%, 10px);
+        }
+        .toast.show { opacity: 1; transform: translate(-50%, 0); }
+        .icon-btn { display: inline-flex; align-items: center; justify-content: center; }
+    </style>
+</head>
+<body>
+
+    <div id="app-container" class="w-full bg-white p-4 transition-all duration-300">
+        <header class="mb-6 text-center border-b border-slate-200 pb-4">
+            <h1 class="text-3xl font-bold text-indigo-600">Prompt魔法书 📖</h1>
+            <p class="text-slate-500 mt-1">您的AI提示词管理助手 v1.1</p>
+        </header>
+
+        <main>
+            <section id="input-section" class="mb-6">
+                <h2 id="form-title" class="text-xl font-semibold mb-3 text-slate-700">添加新的Prompt</h2>
+                <div class="space-y-4">
+                    <textarea id="prompt-input" class="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-shadow" rows="4" placeholder="在此输入您的Prompt..."></textarea>
+                    <div>
+                        <input type="text" id="tags-input" class="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-shadow" placeholder="添加标签, 用逗号(,)分隔">
+                        <div id="existing-tags-container" class="mt-2 flex flex-wrap gap-2" aria-label="从现有标签中选择">
+                            </div>
+                    </div>
+                </div>
+                <button id="save-button" class="button mt-4 w-full bg-indigo-600 hover:bg-indigo-700 text-white">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                    <span>保存Prompt</span>
+                </button>
+                 <button id="cancel-edit-button" class="button hidden mt-2 w-full bg-slate-200 hover:bg-slate-300 text-slate-700">取消编辑</button>
+            </section>
+            
+            <section id="tags-section" class="mb-6">
+                <h2 class="text-xl font-semibold mb-3 text-slate-700">标签筛选</h2>
+                <div id="tag-list-container" class="bg-slate-50 p-3 rounded-lg border border-slate-200 flex flex-wrap gap-2">
+                    <p id="no-tags-placeholder" class="text-slate-500 italic">暂无标签</p>
+                </div>
+            </section>
+
+            <section id="list-section" class="mb-6">
+                <h2 class="text-xl font-semibold mb-3 text-slate-700">已保存的Prompts</h2>
+                <div id="prompt-list-container" class="max-h-[30rem] overflow-y-auto bg-slate-50 p-2 rounded-lg border border-slate-200">
+                    <ul id="prompt-list" class="space-y-3 w-full"></ul>
+                </div>
+            </section>
+
+            <section id="data-operations-section" class="border-t border-slate-200 pt-6">
+                <h2 class="text-xl font-semibold mb-3 text-slate-700">数据管理</h2>
+                <div id="data-management-buttons" class="flex flex-col sm:flex-row gap-2 mt-4">
+                    <button id="export-json-button" class="button flex-1 bg-green-600 hover:bg-green-700 text-white">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                        <span>导出为 JSON</span>
+                    </button>
+                     <button id="export-txt-button" class="button flex-1 bg-sky-600 hover:bg-sky-700 text-white">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                        <span>导出为 TXT</span>
+                    </button>
+                    <button id="import-json-button" class="button flex-1 bg-purple-600 hover:bg-purple-700 text-white mt-2 sm:mt-0">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4m0 0h8m-8 4h.01M12 4h-1M4 4h1m0 0v1m0-1H4m1 0V3m7 1V3m0 1v1m0-1h-1m1 0h1M7 8H6m1 0h1m5 0h-1m1 0h1m-5 4h-1m1 0h1m2 0h-1m1 0h1m-2 4h-1m1 0h1"></path></svg>
+                        <span>导入 JSON</span>
+                    </button>
+                </div>
+            </section>
+        </main>
+
+        <footer class="mt-8 text-center text-sm text-slate-400">
+            <p>&copy; 2025 Prompt魔法书 James</p>
+        </footer>
+    </div>
+
+    <div id="toast-message" class="toast"></div>
+    <script src="main.js"></script>
+</body>
+</html>

@@ -1,0 +1,575 @@
+/* Tailwind CSS 替代样式 - 确保插件环境中正常显示 */
+.w-full { width: 100%; }
+.bg-white { background-color: white; }
+.p-4 { padding: 1rem; }
+.mb-6 { margin-bottom: 1.5rem; }
+.text-center { text-align: center; }
+.border-b { border-bottom-width: 1px; }
+.border-slate-200 { border-color: #e2e8f0; }
+.pb-4 { padding-bottom: 1rem; }
+.text-3xl { font-size: 1.875rem; line-height: 2.25rem; }
+.font-bold { font-weight: 700; }
+.text-indigo-600 { color: #4f46e5; }
+.text-slate-500 { color: #64748b; }
+.mt-1 { margin-top: 0.25rem; }
+.text-xl { font-size: 1.25rem; line-height: 1.75rem; }
+.font-semibold { font-weight: 600; }
+.mb-3 { margin-bottom: 0.75rem; }
+.text-slate-700 { color: #334155; }
+.space-y-4 > * + * { margin-top: 1rem; }
+.p-3 { padding: 0.75rem; }
+.border { border-width: 1px; }
+.border-slate-300 { border-color: #cbd5e1; }
+.rounded-lg { border-radius: 0.5rem; }
+.focus\:ring-2:focus { box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.5); }
+.focus\:ring-indigo-500:focus { box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.5); }
+.focus\:border-indigo-500:focus { border-color: #6366f1; }
+.transition-shadow { transition: box-shadow 0.15s ease-in-out; }
+.mt-2 { margin-top: 0.5rem; }
+.flex { display: flex; }
+.flex-wrap { flex-wrap: wrap; }
+.gap-2 { gap: 0.5rem; }
+.button { display: inline-flex; align-items: center; justify-content: center; }
+.mt-4 { margin-top: 1rem; }
+.bg-indigo-600 { background-color: #4f46e5; }
+.hover\:bg-indigo-700:hover { background-color: #4338ca; }
+.text-white { color: white; }
+.w-4 { width: 1rem; }
+.h-4 { height: 1rem; }
+.hidden { display: none; }
+.bg-slate-200 { background-color: #e2e8f0; }
+.hover\:bg-slate-300:hover { background-color: #cbd5e1; }
+.bg-slate-50 { background-color: #f8fafc; }
+.rounded-lg { border-radius: 0.5rem; }
+.max-h-\[30rem\] { max-height: 30rem; }
+.overflow-y-auto { overflow-y: auto; }
+.space-y-3 > * + * { margin-top: 0.75rem; }
+.flex-col { flex-direction: column; }
+.sm\:flex-row { flex-direction: row; }
+.flex-1 { flex: 1 1 0%; }
+.bg-green-600 { background-color: #16a34a; }
+.hover\:bg-green-700:hover { background-color: #15803d; }
+.bg-sky-600 { background-color: #0284c7; }
+.hover\:bg-sky-700:hover { background-color: #0369a1; }
+.bg-purple-600 { background-color: #9333ea; }
+.hover\:bg-purple-700:hover { background-color: #7c3aed; }
+.sm\:mt-0 { margin-top: 0; }
+.mt-8 { margin-top: 2rem; }
+.text-sm { font-size: 0.875rem; line-height: 1.25rem; }
+.text-slate-400 { color: #94a3b8; }
+.transition-all { transition: all 0.15s ease-in-out; }
+.duration-300 { transition-duration: 300ms; }
+
+/* 基本样式 */
+body {
+    font-family: 'Inter', sans-serif; /* 统一字体，与index.html一致 */
+    background-color: #f0f4f8;
+    color: #334155;
+    line-height: 1.6;
+    margin: 0;
+    padding: 0; /* 移除body的padding */
+    display: flex;
+    justify-content: center;
+    align-items: flex-start; /* 顶部对齐，如果内容不足min-height */
+    min-height: 100vh;
+    box-sizing: border-box;
+    width: 100%; /* 让body宽度占满视口 */
+    min-height: 400px; /* 1. 设定标准化的插件窗口尺寸 */
+}
+
+/* 确保所有主要文本元素继承统一字体 */
+h1, h2, h3, h4, h5, h6,
+p, a, span, div, button, input, textarea, select, option, label {
+    font-family: inherit; /* 继承body的字体 */
+}
+
+#app-container {
+    width: 375px; /* 固定插件宽度 */
+    margin-left: auto;
+    margin-right: auto;
+    background-color: white;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    padding: 16px; /* 恢复左右内边距，确保内容不贴边 */
+    transition: all 0.3s ease-in-out;
+    box-sizing: border-box;
+    min-height: inherit; /* 继承body的min-height */
+}
+
+header {
+    margin-bottom: 20px; /* 3. 拉开元素间距 */
+    text-align: center; /* 5. 主标题居中 */
+    border-bottom: 1px solid #e2e8f0;
+    padding-bottom: 1rem;
+}
+
+header h1 {
+    font-size: 1.875rem; /* text-3xl */
+    font-weight: 700; /* font-bold */
+    color: #4f46e5; /* 插件主题蓝色 */
+    margin-bottom: 8px; /* 为副标题留出空间 */
+}
+
+header p {
+    color: #6b7280; /* 5. 副标题颜色较浅 (gray-500) */
+    font-size: 0.875rem; /* 5. 副标题字号较小 (text-sm) */
+    margin-top: 0; /* 调整与主标题的间距 */
+    text-align: center; /* 5. 副标题居中 */
+}
+
+main h2, #form-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 20px; /* 3. 拉开元素间距 */
+    color: #374151; /* (gray-700) */
+    /* text-align: left; 保持左对齐 */
+}
+
+/* 为表单各部分增加上外边距 */
+#input-section,
+#tags-section,
+#data-operations-section {
+    margin-top: 24px; /* 3. 拉开元素间距，比16px稍大一些 */
+}
+
+#list-section {
+    margin-top: 24px;
+    padding-left: 0; /* 移除额外内边距，因为app-container已有内边距 */
+    padding-right: 0; /* 移除额外内边距，因为app-container已有内边距 */
+    margin-left: 0;
+    margin-right: 0;
+}
+
+#list-section h2 {
+    margin-left: 0; /* 确保标题没有额外的左边距 */
+}
+
+/* 移除额外内边距，因为app-container已提供统一内边距 */
+header,
+#input-section,
+#tags-section,
+#data-operations-section {
+    padding-left: 0;
+    padding-right: 0;
+}
+
+#input-section > div { /* 指向 prompt-input 和 tags-input 的父容器 */
+    margin-top: 16px; /* 3. 为每个独立的表单控件之间，设置足够的垂直外边距 */
+}
+
+#input-section > div > div { /* 指向 existing-tags-container */
+     margin-top: 16px;
+}
+
+.input-group {
+    margin-bottom: 1rem;
+}
+
+.input-group label {
+    display: block;
+    margin-bottom: 0.25rem;
+    font-size: 0.875rem; /* text-sm */
+    font-weight: 500; /* font-medium */
+    color: #475569; /* text-slate-600 */
+}
+
+textarea#prompt-input, input#tags-input {
+    box-sizing: border-box;
+    width: 100%;
+    padding: 12px; /* 4. 输入框增加内边距 */
+    border: 1px solid #d1d5db; /* 4. 输入框柔和的边框颜色 (gray-300) */
+    border-radius: 8px; /* 4. 输入框添加圆角 */
+    font-size: 0.875rem;
+    color: #334155;
+    background-color: white;
+    transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out; /* 添加过渡效果 */
+}
+
+textarea#prompt-input:focus, input#tags-input:focus {
+    outline: none; /* 移除默认outline */
+    border-color: #4f46e5; /* 4. 焦点时边框变为插件的主题蓝色 (indigo-600) */
+    box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.2); /* 4. 焦点时加上细微的阴影 */
+}
+
+/* 按钮样式 */
+.button {
+    font-weight: 500;
+    padding-top: 0.4rem;
+    padding-bottom: 0.4rem;
+    padding-left: 0.8rem;
+    padding-right: 0.8rem;
+    border-radius: 0.375rem;
+    font-size: 0.8rem;
+    border: 1px solid transparent;
+    transition: all 0.15s ease-in-out;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem; /* space-x-2 */
+    cursor: pointer;
+}
+
+.button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px -2px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.06);
+    cursor: pointer; /* 确保有手型光标 */
+}
+
+.prompt-item .prompt-actions button:hover {
+    /* 确保prompt item内的按钮也没有魔法棒光标 */
+    cursor: pointer; 
+}
+
+.button:active {
+    transform: translateY(0px);
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+#save-button {
+    width: 100%;
+    background-color: #4f46e5; /* (indigo-600) */
+    color: white;
+    border: 1px solid transparent; /* 确保与其它按钮一致性 */
+    padding: 12px 0; /* 4. 主按钮增加其内边距 */
+    border-radius: 8px; /* 4. 主按钮设置明确的圆角 */
+    font-weight: 500;
+    font-size: 0.9rem; /* 稍微调整字体大小 */
+    display: inline-flex; /* 确保SVG和文字对齐 */
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    transition: background-color 0.2s ease-in-out;
+}
+#save-button:hover { 
+    background-color: #4338ca; /* hover:bg-indigo-700 */ 
+}
+
+#cancel-edit-button {
+    width: 100%;
+    background-color: #e2e8f0; /* bg-slate-200 */
+    color: #334155; /* text-slate-700 */
+    margin-top: 0.5rem;
+}
+#cancel-edit-button:hover { background-color: #cbd5e1; /* hover:bg-slate-300 */ }
+
+.button-group {
+    display: flex;
+    gap: 0.5rem; /* space-x-2 */
+    margin-top: 1rem;
+}
+
+#data-management-buttons {
+    display: flex;
+    gap: 0.5rem; /* 按钮之间的间距 */
+    flex-wrap: wrap; /* 允许换行以防止溢出 */
+}
+
+#data-management-buttons {
+    display: flex;
+    gap: 0.5rem; /* 按钮之间的间距 */
+    flex-wrap: wrap; /* 允许换行以防止溢出 */
+    justify-content: space-between; /* 在空间足够时，按钮会均匀分布 */
+}
+
+#data-management-buttons .button {
+    flex-grow: 1;
+    flex-basis: calc(33.333% - 0.5rem);
+    min-width: auto; /* 移除最小宽度限制，让内容决定宽度 */
+    padding: 0.5rem 1rem; /* 调整内边距 */
+    font-size: 0.9rem; /* 调整字体大小 */
+    text-align: center;
+    white-space: nowrap; /* 防止文字换行 */
+    display: flex; /* 用于垂直居中文本 */
+    align-items: center; /* 垂直居中文本 */
+    justify-content: center; /* 水平居中文本 */
+    line-height: 1.2; /* 调整行高确保单行显示 */
+}
+
+#data-management-buttons .button svg {
+    display: none; /* 隐藏SVG图标 */
+}
+
+/* 针对插件可能更窄的视图，可以考虑进一步的媒体查询或特定容器查询，但首先尝试通用调整 */
+/* 例如，如果插件容器有一个特定的类或ID，可以这样写：
+.plugin-container #data-management-buttons .button {
+    flex-basis: 100%; // 在非常窄的情况下，让按钮堆叠
+    margin-bottom: 0.5rem;
+}
+*/
+
+#export-json-button {
+    background-color: #28a745; /* 保持绿色，但使用更鲜明的绿色 */
+    color: white;
+}
+#export-json-button:hover {
+    background-color: #218838;
+}
+
+#export-txt-button {
+    background-color: #007bff; /* 保持蓝色 */
+    color: white;
+}
+#export-txt-button:hover {
+    background-color: #0056b3;
+}
+
+#import-json-button {
+    background-color: #A0522D; /* 棕色 Sienna */
+    color: white;
+}
+
+#import-json-button:hover {
+    background-color: #8B4513; /* 深一点的棕色 SaddleBrown */
+}
+
+/* SVG图标已隐藏，无需此段 */
+
+#export-txt-button {
+    flex: 1;
+    background-color: #0ea5e9; /* bg-sky-500 - keeping a distinct blue for TXT export */
+    color: white;
+}
+#export-txt-button:hover { background-color: #0284c7; /* hover:bg-sky-600 */ }
+
+/* Reduce icon sizes for specific buttons */
+#save-button svg,
+#export-json-button svg,
+#export-txt-button svg {
+    width: 0.9em; /* Adjusted for smaller buttons */
+    height: 0.9em;
+}
+
+/* 标签样式 */
+#existing-tags-container {
+    margin-bottom: 1rem; /* 增加与保存按钮的间距 */
+}
+
+#existing-tags-container, #tag-list-container {
+    margin-top: 0.5rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+#tag-list-container {
+    background-color: #f8fafc; /* bg-slate-50 */
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+    border: 1px solid #e2e8f0; /* border-slate-200 */
+}
+
+.tag-button {
+    background-color: #e0f2fe; /* bg-sky-100 - light happy blue */
+    color: #0369a1; /* text-sky-700 */
+    border: 1px solid #bae6fd; /* border-sky-200 */
+    padding: 0.25rem 0.6rem;
+    font-size: 0.75rem;
+    border-radius: 9999px; /* rounded-full */
+    transition: all 0.15s ease-in-out;
+}
+
+.tag-button:hover {
+    background-color: #bae6fd; /* hover:bg-sky-200 */
+    transform: translateY(-1px);
+}
+
+.tag-button.active {
+    background-color: #3b82f6; /* bg-blue-500 */
+    color: white;
+    border-color: #2563eb; /* border-blue-600 */
+}
+
+#no-tags-placeholder {
+    color: #64748b; /* text-slate-500 */
+    font-style: italic;
+}
+
+/* Prompt列表样式 */
+#prompt-list-container {
+    max-height: 30rem;
+    overflow-y: auto;
+    margin-top: 1.5rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.5rem;
+    background-color: #f8fafc; /* 与tag-list-container保持一致的背景色 */
+    padding: 0.75rem; /* 与tag-list-container保持一致的内边距 */
+    margin-left: 0;
+    margin-right: 0;
+}
+
+.prompt-item {
+    background-color: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 12px; /* 适当的内边距 */
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+    text-align: left;
+    margin: 0; /* 确保没有外边距 */
+    box-sizing: border-box; /* 确保padding包含在width内 */
+}
+
+.prompt-item:hover {
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); /* 悬停时更明显的阴影，如果需要保留悬停效果 */
+    /* 移除transform效果，如果不需要动效 */
+}
+
+.prompt-item .prompt-content {
+    text-align: left; /* 确保文本内容左对齐 */
+    width: 100%; /* 确保内容占据全部可用宽度 */
+    margin: 0; /* 移除所有外边距 */
+    padding: 0; /* 移除所有内边距 */
+    word-wrap: break-word; /* 确保长文本正确换行 */
+    line-height: 1.5; /* 适当的行高 */
+}
+
+.prompt-item-actions {
+    display: flex;
+    justify-content: flex-end; /* 让按钮组靠右对齐 */
+    align-items: center;
+    gap: 8px; /* 按钮之间的间距 */
+    margin: 0; /* 移除所有外边距 */
+    padding: 0; /* 移除所有内边距 */
+    flex-shrink: 0; /* 防止按钮组被压缩 */
+}
+
+.prompt-item-footer {
+  display: flex;
+  justify-content: space-between; /* 标签在左，按钮在右 */
+  align-items: flex-start; /* 顶部对齐，避免垂直居中造成的偏移 */
+  width: 100%; /* 确保占满宽度 */
+  margin: 0; /* 确保没有外边距 */
+  padding: 0; /* 确保没有内边距 */
+}
+
+.prompt-item:last-child {
+    border-bottom: none;
+}
+
+.prompt-item:hover {
+    box-shadow: none; /* 移除悬停时的阴影，如果不需要 */
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.prompt-item-content {
+    flex-grow: 1;
+    overflow: hidden; /* 防止内容溢出 */
+    /* text-overflow: ellipsis; */ /* 文本溢出时显示省略号 */
+    /* white-space: nowrap; */ /* 强制文本在一行内显示 */
+}
+
+.prompt-item + .prompt-item {
+  margin-top: 16px;
+}
+
+.prompt-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin: 0; /* 移除所有外边距 */
+    padding: 0; /* 确保没有内边距 */
+    justify-content: flex-start; /* 确保标签左对齐 */
+}
+
+.prompt-tag {
+    background-color: #e0f2fe; /* bg-sky-100 */
+    color: #0369a1; /* text-sky-700 */
+    padding: 0.125rem 0.5rem;
+    font-size: 0.7rem;
+    border-radius: 9999px;
+}
+
+.prompt-actions {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: flex-end;
+}
+
+.icon-btn {
+    background-color: #f1f5f9; /* bg-slate-100 */
+    color: #475569; /* text-slate-600 */
+    padding: 0.3rem;
+    border-radius: 9999px;
+    border: 1px solid transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.icon-btn svg {
+    width: 1rem; /* w-5 equivalent */
+    height: 1rem; /* h-5 equivalent */
+}
+
+/* 确保所有SVG图标都有正确的尺寸 */
+.w-5 {
+    width: 1.25rem;
+}
+
+.h-5 {
+    height: 1.25rem;
+}
+
+.w-4 {
+    width: 1rem;
+}
+
+.h-4 {
+    height: 1rem;
+}
+
+.icon-btn:hover {
+    background-color: #e2e8f0; /* hover:bg-slate-200 */
+    color: #1e293b; /* hover:text-slate-800 */
+}
+
+/* 页脚 */
+footer {
+    margin-top: 2rem;
+    text-align: center;
+    font-size: 0.875rem;
+    color: #64748b;
+}
+
+/* 自定义滚动条样式 */
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 10px; }
+::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: #64748b; }
+
+.empty-state-placeholder {
+  list-style: none; /* 关键：移除前面的黑点 */
+  text-align: center;      /* 关键：文字水平居中 */
+  color: #909090;           /* 使用更柔和的灰色 */
+  padding: 2.5rem 0;       /* 增加垂直内边距，让它在空列表中更突出 */
+  font-size: 0.9rem;       /* 可以稍微调整字号 */
+}
+
+/* Toast消息样式 */
+.toast {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #334155; /* bg-slate-700 */
+    color: white;
+    padding: 0.75rem 1.25rem;
+    border-radius: 0.375rem;
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+    z-index: 1000;
+    font-size: 0.875rem;
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out, bottom 0.3s ease-in-out;
+}
+
+.toast.show {
+    opacity: 1;
+    bottom: 30px;
+}
+
+.hidden {
+    display: none !important;
+}
