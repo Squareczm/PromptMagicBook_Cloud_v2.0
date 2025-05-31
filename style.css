@@ -84,13 +84,13 @@ p, a, span, div, button, input, textarea, select, option, label {
 }
 
 #app-container {
-    width: 375px; /* 固定插件宽度 */
+    width: 450px; /* 增加插件宽度，给内容更多空间 */
     margin-left: auto;
     margin-right: auto;
     background-color: white;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     border-radius: 8px;
-    padding: 16px; /* 恢复左右内边距，确保内容不贴边 */
+    padding: 20px; /* 增加内边距 */
     transition: all 0.3s ease-in-out;
     box-sizing: border-box;
     min-height: inherit; /* 继承body的min-height */
@@ -392,24 +392,32 @@ textarea#prompt-input:focus, input#tags-input:focus {
     border: 1px solid #e2e8f0;
     border-radius: 0.5rem;
     background-color: #f8fafc; /* 与tag-list-container保持一致的背景色 */
-    padding: 0.75rem; /* 与tag-list-container保持一致的内边距 */
+    padding: 8px; /* 减少内边距，给prompt卡片更多空间 */
     margin-left: 0;
     margin-right: 0;
+}
+
+/* 重置prompt列表的默认样式 */
+#prompt-list {
+    list-style: none; /* 移除列表样式 */
+    margin: 0; /* 移除默认外边距 */
+    padding: 0; /* 移除默认内边距 */
 }
 
 .prompt-item {
     background-color: #ffffff;
     border: 1px solid #e2e8f0;
     border-radius: 8px;
-    padding: 12px; /* 适当的内边距 */
+    padding: 8px 12px; /* 左右稍多内边距，上下较少 */
     box-shadow: 0 2px 4px rgba(0,0,0,0.05);
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 8px; /* 减少垂直间距 */
     width: 100%;
     text-align: left;
     margin: 0; /* 确保没有外边距 */
     box-sizing: border-box; /* 确保padding包含在width内 */
+    position: relative; /* 确保定位正确 */
 }
 
 .prompt-item:hover {
