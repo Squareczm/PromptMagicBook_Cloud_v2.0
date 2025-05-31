@@ -5,30 +5,113 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Prompt魔法书</title>
     <link rel="stylesheet" href="style.css">
-    <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* 自定义滚动条样式 */
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 10px; }
-        ::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: #64748b; }
-        .toast {
-            position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
-            background-color: #1f2937; color: white; padding: 12px 24px;
-            border-radius: 8px; z-index: 1000; opacity: 0;
-            transition: opacity 0.3s ease, transform 0.3s ease;
-            transform: translate(-50%, 10px);
+        /* 补充内联样式以确保在所有环境下正常显示 */
+        .scroll-smooth { scroll-behavior: smooth; }
+        
+        /* 认证容器特殊样式 */
+        #auth-container {
+            min-height: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
-        .toast.show { opacity: 1; transform: translate(-50%, 0); }
-        .icon-btn { display: inline-flex; align-items: center; justify-content: center; }
+        
+        /* 确保在file://协议下也能正常显示 */
+        .protocol-warning {
+            background-color: #fef3c7;
+            color: #92400e;
+            border: 1px solid #fcd34d;
+            border-radius: 0.5rem;
+            padding: 0.75rem;
+            margin-bottom: 1rem;
+            font-size: 0.875rem;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
 
     <div id="app-container" class="w-full bg-white p-4 transition-all duration-300">
+        <!-- 协议警告（仅在file://协议下显示） -->
+        <div id="protocol-warning" class="protocol-warning hidden">
+            ⚠️ 您正在直接打开HTML文件。为了完整体验所有功能，请将此项目作为Chrome扩展安装使用。
+        </div>
+        
         <header class="mb-6 text-center border-b border-slate-200 pb-4">
-            <h1 class="text-3xl font-bold text-indigo-600">Prompt魔法书 📖</h1>
-            <p class="text-slate-500 mt-1">您的AI提示词管理助手 v1.2</p>
+            <!-- 主标题区域 -->
+            <div class="mb-4">
+                <h1 class="text-3xl font-bold text-indigo-600">Prompt魔法书 📖</h1>
+                <p class="text-slate-500 mt-1">您的AI提示词管理助手 v2.0</p>
+            </div>
+            
+            <!-- 云同步状态区域 -->
+            <div id="auth-container" class="flex justify-center items-center">
+                <!-- Firebase未配置时显示 -->
+                <div id="firebase-not-configured" class="hidden text-xs text-amber-600 bg-amber-50 px-3 py-2 rounded-lg border border-amber-200">
+                    <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 19c-.77.833.192 2.5 1.732 2.5z"></path>
+                    </svg>
+                    云同步未配置 - 以本地模式运行
+                </div>
+                
+                <!-- 未登录状态 -->
+                <div id="email-auth-container" class="hidden w-full max-w-sm mx-auto">
+                    <div class="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                        <h3 class="text-sm font-medium text-blue-800 mb-3 text-center">邮箱登录启用云同步</h3>
+                        
+                        <!-- 登录表单 -->
+                        <div id="login-form" class="space-y-3">
+                            <input type="email" id="email-input" class="w-full px-3 py-2 text-sm border border-blue-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="邮箱地址">
+                            <input type="password" id="password-input" class="w-full px-3 py-2 text-sm border border-blue-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="密码">
+                            <div class="flex space-x-2">
+                                <button id="sign-in-btn" class="flex-1 bg-blue-500 hover:bg-blue-600 text-white text-sm py-2 px-3 rounded transition-colors">登录</button>
+                                <button id="sign-up-btn" class="flex-1 bg-green-500 hover:bg-green-600 text-white text-sm py-2 px-3 rounded transition-colors">注册</button>
+                            </div>
+                            <button id="show-reset-form" class="w-full text-xs text-blue-600 hover:text-blue-800 transition-colors">忘记密码？</button>
+                        </div>
+                        
+                        <!-- 重置密码表单 -->
+                        <div id="reset-form" class="hidden space-y-3">
+                            <p class="text-xs text-blue-700">输入邮箱地址，我们会发送重置密码的链接</p>
+                            <input type="email" id="reset-email-input" class="w-full px-3 py-2 text-sm border border-blue-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="邮箱地址">
+                            <div class="flex space-x-2">
+                                <button id="send-reset-btn" class="flex-1 bg-orange-500 hover:bg-orange-600 text-white text-sm py-2 px-3 rounded transition-colors">发送重置邮件</button>
+                                <button id="back-to-login" class="flex-1 bg-gray-500 hover:bg-gray-600 text-white text-sm py-2 px-3 rounded transition-colors">返回登录</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 已登录状态 -->
+                <div id="user-info" class="hidden flex items-center justify-between w-full max-w-md bg-green-50 px-4 py-2 rounded-lg border border-green-200">
+                    <div class="flex items-center space-x-2 flex-1">
+                        <div class="w-6 h-6 rounded-full bg-green-500 flex items-center justify-center">
+                            <svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"/>
+                            </svg>
+                        </div>
+                        <div class="flex-1 min-w-0 text-center">
+                            <div id="user-name" class="font-medium text-green-800 text-sm truncate"></div>
+                            <div class="text-green-600 text-xs">云同步已启用</div>
+                        </div>
+                    </div>
+                    <button id="google-sign-out-btn" class="w-7 h-7 flex items-center justify-center text-green-600 hover:text-green-800 hover:bg-green-100 rounded transition-all duration-200 ml-2" title="登出">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+                        </svg>
+                    </button>
+                </div>
+                
+                <!-- 加载状态 -->
+                <div id="auth-loading" class="hidden flex items-center space-x-2 text-blue-600">
+                    <svg class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    <span class="text-sm">连接中...</span>
+                </div>
+            </div>
         </header>
 
         <main>
@@ -83,7 +166,7 @@
 
             <section id="data-operations-section" class="border-t border-slate-200 pt-6">
                 <h2 class="text-xl font-semibold mb-3 text-slate-700">数据管理</h2>
-                <div id="data-management-buttons" class="flex flex-col sm:flex-row gap-2 mt-4">
+                <div id="data-management-buttons" class="flex flex-col sm:flex-row gap-3 mt-4">
                     <button id="export-json-button" class="button flex-1 bg-green-600 hover:bg-green-700 text-white">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
                         <span>导出为 JSON</span>
@@ -92,7 +175,7 @@
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
                         <span>导出为 TXT</span>
                     </button>
-                    <button id="import-json-button" class="button flex-1 bg-purple-600 hover:bg-purple-700 text-white mt-2 sm:mt-0">
+                    <button id="import-json-button" class="button flex-1 bg-purple-600 hover:bg-purple-700 text-white">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4m0 0h8m-8 4h.01M12 4h-1M4 4h1m0 0v1m0-1H4m1 0V3m7 1V3m0 1v1m0-1h-1m1 0h1M7 8H6m1 0h1m5 0h-1m1 0h1m-5 4h-1m1 0h1m2 0h-1m1 0h1m-2 4h-1m1 0h1"></path></svg>
                         <span>导入 JSON</span>
                     </button>
@@ -106,6 +189,16 @@
     </div>
 
     <div id="toast-message" class="toast"></div>
+    
+    <!-- Firebase SDK 本地文件引用 -->
+    <script src="firebase-app-compat.js"></script>
+    <script src="firebase-auth-compat.js"></script>
+    <script src="firebase-firestore-compat.js"></script>
+    
+    <!-- v2.0 模块化架构 -->
+    <script src="localStore.js"></script>
+    <script src="cloudSync.js"></script>
+    
     <script src="main.js"></script>
 </body>
 </html>

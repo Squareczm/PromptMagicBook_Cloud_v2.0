@@ -1,0 +1,68 @@
+# Firebase配置文件 - 包含敏感信息，不推送到仓库
+firebase-config.js
+
+# Firebase SDK文件 - 第三方依赖，文件较大（总计~500KB）
+# 用户需要手动下载或使用自动化脚本下载
+firebase-app-compat.js
+firebase-auth-compat.js
+firebase-firestore-compat.js
+
+# 开发版manifest文件 - 包含真实OAuth配置
+manifest.dev.json
+
+# 开发环境文件
+.env
+.env.local
+.env.development
+.env.production
+
+# IDE和编辑器
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# 系统文件
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# 临时文件
+*.tmp
+*.temp
+*.log
+
+# Node.js (如果未来使用)
+node_modules/
+npm-debug.log
+yarn-debug.log
+yarn-error.log
+
+# 构建输出
+dist/
+build/
+out/
+
+# 备份文件
+*.bak
+*.backup
+
+# 环境配置文件（包含敏感信息）
+.env
+.env.local
+.env.production
+.env.test
+
+# 压缩包
+*.zip
+*.rar
+*.7z
+
+# 开发文档 (内部文档，不公开)
+development_v2.0.md
+KEY_LEARNINGS.md

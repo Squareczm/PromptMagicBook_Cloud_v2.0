@@ -1,0 +1,24 @@
+// Firebase配置文件模板
+// 使用邮箱密码认证的配置
+
+const firebaseConfig = {
+  apiKey: "your-api-key",
+  authDomain: "your-project.firebaseapp.com", 
+  projectId: "your-project-id",
+  storageBucket: "your-project.appspot.com",
+  messagingSenderId: "123456789",
+  appId: "your-app-id"
+};
+
+// 配置说明：
+// 1. 登录Firebase Console: https://console.firebase.google.com/
+// 2. 选择或创建项目
+// 3. 进入项目设置 > 常规 > 您的应用 > Web应用
+// 4. 复制配置信息到上方对象中
+// 5. 在Authentication > Sign-in method中启用"电子邮件地址/密码"
+// 6. 在Firestore Database中创建数据库
+// 7. 将此文件重命名为 firebase-config.js
+
+// 注意: 
+// - 请勿将真实配置文件提交到Git仓库
+// - 已在.gitignore中排除firebase-config.js 

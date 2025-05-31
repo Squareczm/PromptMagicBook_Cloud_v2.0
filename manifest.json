@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "Prompt魔法书",
-  "version": "1.2",
-  "description": "一款浏览器插件，让用户能够高效地存储、分类和使用自己精心设计的AI提示词（Prompts）。",
+  "version": "2.0",
+  "description": "一款支持云端同步的浏览器插件，让用户能够高效地存储、分类和使用自己精心设计的AI提示词（Prompts）。",
   "permissions": [
     "storage"
   ],
@@ -18,5 +18,8 @@
     "16": "icons/icon16.png",
     "48": "icons/icon48.png",
     "128": "icons/icon128.png"
+  },
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'; connect-src 'self' https://*.googleapis.com https://*.google.com https://*.firebaseapp.com"
   }
-}
+} 
