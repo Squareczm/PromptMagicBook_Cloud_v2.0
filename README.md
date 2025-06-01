@@ -21,16 +21,44 @@
 - **搜索功能**: 内容和标签的全文搜索
 - **数据导入导出**: JSON/TXT格式支持
 
+### ⌨️ **快捷操作**
+- **快捷唤醒**: `Ctrl+Shift+P` (Mac: `Cmd+Shift+P`) 快速打开
+- **快速保存**: `Ctrl+Enter` (Mac: `Cmd+Enter`) 快速保存Prompt
+- **键盘操作**: 支持键盘快捷键，提升操作效率
+
 ## 🚀 快速开始
 
-### 📦 第1步: 下载和安装
+### 🎯 方法1: 一键安装（推荐）
+
+**Windows系统:**
+```cmd
+# 下载项目后，在项目目录下运行
+quick-install.bat
+```
+
+**Linux/macOS系统:**
+```bash
+# 下载项目后，在项目目录下运行
+chmod +x quick-install.sh
+./quick-install.sh
+```
+
+一键安装脚本将自动完成：
+- ✅ 检查必需文件
+- ✅ 下载Firebase SDK依赖
+- ✅ 创建配置文件模板
+- ✅ 显示Chrome扩展安装指导
+
+### 📦 方法2: 手动安装
+
+#### 第1步: 下载和安装
 
 1. **下载项目文件**
    - 克隆或下载本项目到本地文件夹
 
 2. **下载Firebase SDK文件**（必需步骤！）
    
-   **方法1: 自动下载脚本（推荐）**
+   **自动下载脚本:**
    ```powershell
    # Windows PowerShell
    .\download-firebase-sdk.ps1
@@ -41,7 +69,7 @@
    ./download-firebase-sdk.sh
    ```
    
-   **方法2: 手动下载**
+   **手动下载:**
    下载以下文件到项目根目录：
    - [firebase-app-compat.js](https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js)
    - [firebase-auth-compat.js](https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js)
@@ -53,29 +81,29 @@
    3. 点击"加载已解压的扩展程序"
    4. 选择项目文件夹
 
-### ☁️ 第2步: 配置Firebase（可选 - 启用云同步）
+#### 第2步: 配置Firebase（可选 - 启用云同步）
 
 > **注意**: 如果跳过此步骤，应用将以本地模式运行，所有功能正常可用
 
-#### 2.1 创建Firebase项目
+##### 2.1 创建Firebase项目
 1. 访问 [Firebase Console](https://console.firebase.google.com/)
 2. 点击"创建项目"或选择现有项目
 3. 按提示完成项目创建
 
-#### 2.2 启用Authentication
+##### 2.2 启用Authentication
 1. 在Firebase Console中，进入"Authentication"
 2. 点击"开始使用"
 3. 进入"Sign-in method"标签页
 4. 启用"电子邮件地址/密码"提供程序
 5. 点击"保存"
 
-#### 2.3 创建Firestore数据库
+##### 2.3 创建Firestore数据库
 1. 进入"Firestore Database"
 2. 点击"创建数据库"
 3. 选择"以测试模式启动"（或生产模式）
 4. 选择数据库位置（推荐选择距离您较近的区域）
 
-#### 2.4 配置安全规则
+##### 2.4 配置安全规则
 在Firestore Database的"规则"标签页中，设置以下规则：
 ```javascript
 rules_version = '2';
@@ -89,19 +117,15 @@ service cloud.firestore {
 }
 ```
 
-#### 2.5 获取配置信息
+##### 2.5 获取配置信息
 1. 进入"项目设置"（齿轮图标）
 2. 滚动到"您的应用"部分
 3. 如果还没有Web应用，点击"添加应用" > Web图标
 4. 给应用起个名字，点击"注册应用"
 5. 复制`firebaseConfig`对象的内容
 
-#### 2.6 配置本地文件
-1. 复制配置模板：
-   ```bash
-   cp firebase-config.js.template firebase-config.js
-   ```
-2. 编辑`firebase-config.js`文件，填入步骤2.5获取的配置：
+##### 2.6 配置本地文件
+1. 编辑项目根目录下的`firebase-config.js`文件，填入步骤2.5获取的配置：
    ```javascript
    const firebaseConfig = {
      apiKey: "你的-api-key",
@@ -113,7 +137,7 @@ service cloud.firestore {
    };
    ```
 
-### ✅ 第3步: 验证配置
+### ✅ 验证安装
 
 1. **重新加载扩展**
    - 在`chrome://extensions/`页面找到"Prompt魔法书"
@@ -123,22 +147,41 @@ service cloud.firestore {
    - 点击扩展图标，应用应该正常打开
    - 尝试添加一个测试Prompt
 
-3. **验证云同步模式**（如果配置了Firebase）
+3. **验证快捷键**
+   - 按 `Ctrl+Shift+L` (Mac: `Cmd+Shift+L`) 快速打开扩展
+   - 在输入框中按 `Ctrl+Enter` (Mac: `Cmd+Enter`) 快速保存
+
+4. **验证云同步模式**（如果配置了Firebase）
    - 应用顶部显示邮箱登录选项
    - 尝试注册新账户或登录现有账户
    - 登录成功后显示用户邮箱和"云同步已启用"
 
-### 🎯 第4步: 开始使用
+## ⌨️ 快捷键说明
 
-- **本地模式**: 直接使用，数据保存在本地Chrome存储
-- **云同步模式**: 注册/登录账户，享受多设备数据同步
+| 快捷键 | 功能 | 说明 |
+|--------|------|------|
+| `Ctrl+Shift+P` | 打开扩展 | 快速唤醒Prompt魔法书 (Mac: `Cmd+Shift+P`) |
+| `Ctrl+Enter` | 保存Prompt | 在输入框中快速保存当前内容 (Mac: `Cmd+Enter`) |
 
 ## 🔧 故障排除
 
 ### 常见问题
 
 #### Q: 扩展加载后出现错误"找不到firebase"
-**A**: 您需要下载Firebase SDK文件，请回到第1步第2小节
+**A**: 您需要下载Firebase SDK文件，请使用一键安装脚本或手动下载依赖文件
+
+#### Q: 快捷键不工作
+**A**: 检查以下几点：
+1. 确认扩展已正确安装并启用
+2. 在Chrome扩展管理页面检查快捷键设置：`chrome://extensions/shortcuts`
+3. 确保快捷键没有与其他扩展或系统快捷键冲突
+
+#### Q: 一键安装脚本执行失败
+**A**: 尝试以下解决方案：
+1. **Windows**: 确保以管理员权限运行CMD/PowerShell
+2. **Linux/macOS**: 确保脚本有执行权限 `chmod +x quick-install.sh`
+3. 检查网络连接，脚本需要下载Firebase SDK文件
+4. 如果脚本失败，可以使用手动安装方法
 
 #### Q: 登录按钮不显示
 **A**: 检查以下几点：
@@ -225,13 +268,13 @@ Prompt_Magic_Book/
 │   ├── firebase-*.js           # Firebase SDK文件（需下载）
 │   ├── firebase-config.js      # 实际配置（需创建）
 │   └── firebase-config.js.template  # 配置模板
-├── 工具脚本
+├── 安装工具
+│   ├── quick-install.bat       # Windows一键安装
+│   ├── quick-install.sh        # Linux/macOS一键安装
 │   ├── download-firebase-sdk.ps1   # Windows下载脚本
 │   └── download-firebase-sdk.sh    # Linux/macOS下载脚本
 ├── 文档
-│   ├── README.md               # 说明文档
-│   ├── KEY_LEARNINGS.md        # 关键经验
-│   └── GITHUB_RELEASE_GUIDE.md # 发布指南
+│   └── README.md               # 说明文档
 └── 配置文件
     ├── .gitignore              # Git忽略文件
     └── manifest.dev.json       # 开发配置
@@ -261,6 +304,8 @@ Prompt_Magic_Book/
 - ✅ 智能数据合并
 - ✅ 模块化架构重构
 - ✅ 本地优先策略
+- ✅ 快捷键支持
+- ✅ 一键安装脚本
 
 ### v1.2 (历史版本)
 - 基础Prompt管理

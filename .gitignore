@@ -19,6 +19,7 @@ manifest.dev.json
 # IDE和编辑器
 .vscode/
 .idea/
+.cursor/
 *.swp
 *.swo
 *~
@@ -62,7 +63,3 @@ out/
 *.zip
 *.rar
 *.7z
-
-# 开发文档 (内部文档，不公开)
-development_v2.0.md
-KEY_LEARNINGS.md

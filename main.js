@@ -628,6 +628,25 @@ function bindEventListeners() {
         clearSearchButton.addEventListener('click', clearSearch);
         console.log('清除搜索按钮事件已绑定');
     }
+    
+    // 添加快捷键支持
+    function handleKeyboardShortcuts(event) {
+        // Ctrl+Enter 或 Cmd+Enter 快速保存
+        if ((event.ctrlKey || event.metaKey) && event.key === 'Enter') {
+            event.preventDefault();
+            savePrompt();
+        }
+    }
+    
+    // 为输入框添加快捷键监听
+    if (promptInput) {
+        promptInput.addEventListener('keydown', handleKeyboardShortcuts);
+        console.log('Prompt输入框快捷键事件已绑定');
+    }
+    if (tagsInput) {
+        tagsInput.addEventListener('keydown', handleKeyboardShortcuts);
+        console.log('标签输入框快捷键事件已绑定');
+    }
 }
 
 // 将showToast函数提升到全局作用域，供Firebase模块使用
