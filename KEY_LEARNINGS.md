@@ -2,7 +2,7 @@
 
 ## 🎯 项目概述
 
-本文档记录了从v1.2到v2.0完整重构过程中的关键经验、技术决策和最佳实践，为后续开发和类似项目提供参考。
+本文档记录了从v1.2到v2.0完整重构过程中的关键经验、技术决策和最佳实践，包括v2.0.1双向同步修复的重要突破，为后续开发和类似项目提供参考。
 
 ---
 
@@ -175,6 +175,148 @@ await batch.commit();
 
 ---
 
+## 🚨 Phase 4: v2.0.1 双向同步修复 ⭐ 重大突破
+
+### 🔍 **问题发现: 单向同步的致命缺陷**
+
+#### 原始问题
+```javascript
+// v2.0 原始代码的问题
+setCurrentUser(user) {
+    this.currentUser = user;
+    if (user) {
+        // ❌ 只有本地到云端的同步
+        this.syncLocalDataToCloud();
+    }
+}
+```
+
+#### 影响分析
+1. **数据丢失风险**: 云端已存在的数据无法同步到本地
+2. **用户体验糟糕**: 多设备使用时数据不一致
+3. **功能不完整**: "双向同步"名不副实
+
+### 💡 **解决方案: 真正的双向同步**
+
+#### 关键修复
+```javascript
+// v2.0.1 修复后的代码
+async setCurrentUser(user) {
+    this.currentUser = user;
+    if (user) {
+        try {
+            // ✅ 1. 先从云端拉取数据并与本地合并
+            await this.syncCloudToLocal();
+            
+            // ✅ 2. 然后将本地数据同步到云端
+            await this.syncLocalDataToCloud();
+            
+            console.log('✅ 登录双向同步完成');
+        } catch (error) {
+            console.error('❌ 登录双向同步失败:', error);
+        }
+    }
+}
+```
+
+#### 智能合并逻辑
+```javascript
+mergePrompts(localPrompts, cloudPrompts) {
+    cloudPrompts.forEach(cloudPrompt => {
+        const existingPrompt = mergedMap.get(cloudPrompt.id);
+        
+        if (!existingPrompt) {
+            // 📥 云端新数据，直接添加
+            mergedMap.set(cloudPrompt.id, {
+                ...cloudPrompt,
+                source: 'cloud',
+                syncStatus: 'synced'
+            });
+        } else {
+            // ⚖️ 冲突处理：时间戳比较
+            const localTime = existingPrompt.updatedAt || 0;
+            const cloudTime = cloudPrompt.updatedAt || 0;
+            
+            if (cloudTime > localTime) {
+                // 使用云端较新版本
+                mergedMap.set(cloudPrompt.id, cloudPrompt);
+            }
+        }
+    });
+}
+```
+
+### 🎯 **UI实时更新优化**
+
+#### 同步完成自动刷新
+```javascript
+// 更新本地存储后立即刷新UI
+async updateLocalStorage(mergedPrompts) {
+    window.localStore.prompts = mergedPrompts;
+    await window.localStore.saveLocalData();
+    window.prompts = mergedPrompts;
+    
+    // ✅ 触发UI更新
+    if (typeof window.renderPrompts === 'function') {
+        window.renderPrompts();
+        console.log('🖼️ UI已更新显示合并后的数据');
+    }
+}
+```
+
+#### 用户友好的反馈系统
+```javascript
+// 详细的同步结果提示
+window.addEventListener('cloudToLocalSyncCompleted', async (event) => {
+    const { cloudCount, localCount, mergedCount } = event.detail;
+    
+    if (cloudCount > 0) {
+        const message = `数据合并完成！云端 ${cloudCount} 个 + 本地 ${localCount} 个 = 共 ${mergedCount} 个提示词`;
+        showToast(message, 4000);
+        
+        // 刷新UI显示合并后的数据
+        prompts = await window.localStore.getAllPrompts();
+        renderPrompts();
+        updateFilterTagButtons();
+        updateExistingTagsForInput();
+    }
+});
+```
+
+### 🏆 **修复成果**
+
+#### 用户体验提升
+1. **完整双向同步**: 登录时自动合并云端和本地数据
+2. **零数据丢失**: 智能合并策略确保所有数据保留
+3. **实时反馈**: 详细的同步进度和结果提示
+4. **界面更新**: 同步完成后自动刷新显示
+
+#### 技术架构改进
+1. **异步流程**: setCurrentUser改为async函数
+2. **错误处理**: 完善的try-catch机制
+3. **事件驱动**: 丰富的同步事件系统
+4. **日志完善**: 详细的调试和监控日志
+
+### 📚 **关键经验总结**
+
+#### 1. 测试的重要性
+> **问题**: 开发时只测试了本地到云端的同步，没有验证云端到本地的流程
+> **教训**: 必须测试完整的用户场景，包括多设备协作的真实情况
+
+#### 2. 函数设计的一致性
+> **问题**: 同步函数的异步设计不一致，导致调用方式错误
+> **教训**: API设计要保持一致性，异步函数应统一使用async/await
+
+#### 3. 用户反馈的价值
+> **问题**: 用户发现了开发者没有注意到的严重功能缺陷
+> **教训**: 重视用户反馈，他们的使用场景往往比开发测试更复杂
+
+#### 4. 事件系统的威力
+> **问题**: 同步完成后UI没有自动更新，需要手动刷新
+> **教训**: 良好的事件系统可以让模块间协作更加顺畅
+
+---
+
 ## 🛠️ 开发流程的最佳实践
 
 ### 🔍 **调试策略**
@@ -199,8 +341,8 @@ try {
 
 3. **用户反馈机制**
 ```javascript
-// 实时反馈操作结果
-showToast(`🔄 数据合并完成: 云端${cloudCount}个 + 本地${localCount}个`);
+// 实时状态更新
+showToast(`🔄 数据合并完成: 云端${cloudCount}个 + 本地${localCount}个 = 共${mergedCount}个`, 5000);
 ```
 
 ### 📋 **代码质量保证**
