@@ -10,6 +10,10 @@ firebase-firestore-compat.js
 # 开发版manifest文件 - 包含真实OAuth配置
 manifest.dev.json
 
+# 开发文档 - 仅用于开发阶段，不推送到仓库
+updateplan
+DevelopmentPlan.md
+
 # 开发环境文件
 .env
 .env.local
