@@ -152,12 +152,19 @@ async function handleAuthStateChange(user) {
     if (user) {
         console.log('用户已登录:', user.email);
         
-        // 设置云端同步用户
+        // 设置云端同步用户（现在是异步操作）
         if (window.cloudSync) {
-            window.cloudSync.setCurrentUser(user);
+            try {
+                await window.cloudSync.setCurrentUser(user);
+                console.log('✅ 云端同步设置完成');
+                showToast(`欢迎回来，${user.email}！云同步已启用，数据已同步。`);
+            } catch (error) {
+                console.error('❌ 云端同步设置失败:', error);
+                showToast(`已登录 ${user.email}，但同步时遇到问题: ${error.message}`);
+            }
+        } else {
+            showToast(`欢迎回来，${user.email}！云同步已启用。`);
         }
-        
-        showToast(`欢迎回来，${user.email}！云同步已启用。`);
     } else {
         console.log('用户已登出');
         
@@ -541,7 +548,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         initializeFirebaseServices();
     });
 
-    // v2.0: 使用新的模块化数据管理
     // 初始化本地存储
     console.log('🔄 初始化本地数据存储...');
     try {
@@ -557,37 +563,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         prompts = []; // 使用空数组作为备选
     }
 
-    // 监听云端同步事件
-    window.addEventListener('cloudSyncCompleted', (event) => {
-        const { totalSynced } = event.detail;
-        showToast(`✅ 已同步 ${totalSynced} 个Prompt到云端`);
-        console.log('云端同步完成:', totalSynced);
-    });
-
-    window.addEventListener('cloudSyncFailed', (event) => {
-        const { error } = event.detail;
-        showToast(`❌ 云端同步失败: ${error}`, 5000);
-        console.error('云端同步失败:', error);
-    });
-
-    // Phase 3: 监听双向同步事件
-    window.addEventListener('cloudToLocalSyncCompleted', async (event) => {
-        const { cloudCount, localCount, mergedCount } = event.detail;
-        showToast(`🔄 数据合并完成: 云端${cloudCount}个 + 本地${localCount}个 = 共${mergedCount}个`, 5000);
-        console.log('双向同步完成:', event.detail);
-        
-        // 刷新UI显示
-        prompts = await window.localStore.getAllPrompts();
-        renderPrompts();
-        updateFilterTagButtons();
-        updateExistingTagsForInput();
-    });
-
-    window.addEventListener('cloudToLocalSyncFailed', (event) => {
-        const { error } = event.detail;
-        showToast(`❌ 从云端同步失败: ${error}`, 5000);
-        console.error('从云端同步失败:', error);
-    });
+    // 设置云端同步事件监听器
+    setupCloudSyncEventListeners();
 
     // 初始化UI
     updateFilterTagButtons();
@@ -1135,4 +1112,43 @@ async function importDataFromJson() {
         reader.readAsText(file);
     };
     input.click();
+}
+
+// 云端同步事件监听器
+function setupCloudSyncEventListeners() {
+    // 监听云端到本地同步完成事件
+    window.addEventListener('cloudToLocalSyncCompleted', async (event) => {
+        const { cloudCount, localCount, mergedCount } = event.detail;
+        console.log('📥 云端到本地同步完成:', event.detail);
+        
+        if (cloudCount > 0) {
+            const message = `数据合并完成！云端 ${cloudCount} 个 + 本地 ${localCount} 个 = 共 ${mergedCount} 个提示词`;
+            showToast(message, 4000);
+            
+            // 刷新UI显示合并后的数据
+            prompts = await window.localStore.getAllPrompts();
+            renderPrompts();
+            updateFilterTagButtons();
+            updateExistingTagsForInput();
+        }
+    });
+    
+    // 监听云端到本地同步失败事件
+    window.addEventListener('cloudToLocalSyncFailed', (event) => {
+        console.error('❌ 云端到本地同步失败:', event.detail);
+        showToast(`数据同步失败: ${event.detail.error}`, 5000);
+    });
+    
+    // 监听本地到云端同步完成事件
+    window.addEventListener('cloudSyncCompleted', (event) => {
+        const { totalSynced } = event.detail;
+        console.log('📤 本地到云端同步完成:', event.detail);
+        showToast(`✅ 已同步 ${totalSynced} 个提示词到云端`);
+    });
+    
+    // 监听本地到云端同步失败事件
+    window.addEventListener('cloudSyncFailed', (event) => {
+        console.error('❌ 本地到云端同步失败:', event.detail);
+        showToast(`数据上传失败: ${event.detail.error}`, 5000);
+    });
 }

@@ -41,12 +41,27 @@ class CloudSync {
     }
 
     // 设置当前用户
-    setCurrentUser(user) {
+    async setCurrentUser(user) {
         this.currentUser = user;
         if (user) {
             console.log('👤 设置云端同步用户:', user.email);
-            // 用户登录后同步本地数据
-            this.syncLocalDataToCloud();
+            
+            try {
+                // 用户登录后先执行双向同步
+                console.log('🔄 开始执行登录双向同步...');
+                
+                // 1. 先从云端拉取数据并与本地合并
+                await this.syncCloudToLocal();
+                
+                // 2. 然后将本地数据同步到云端（包括本地新增的和合并后需要同步的）
+                await this.syncLocalDataToCloud();
+                
+                console.log('✅ 登录双向同步完成');
+                
+            } catch (error) {
+                console.error('❌ 登录双向同步失败:', error);
+                // 即使同步失败，也要显示已登录状态
+            }
         } else {
             console.log('👤 清理云端同步用户');
             this.currentUser = null;
@@ -146,6 +161,10 @@ class CloudSync {
                         mergedCount: mergedPrompts.length 
                     }
                 }));
+                
+                console.log('📊 同步统计: 云端', cloudPrompts.length, '个 + 本地', localPrompts.length, '个 = 合并后', mergedPrompts.length, '个');
+            } else {
+                console.log('📭 云端暂无数据，保持本地数据');
             }
             
         } catch (error) {
@@ -250,6 +269,12 @@ class CloudSync {
             
             // 更新全局prompts变量
             window.prompts = mergedPrompts;
+            
+            // 触发UI更新
+            if (typeof window.renderPrompts === 'function') {
+                window.renderPrompts();
+                console.log('🖼️ UI已更新显示合并后的数据');
+            }
             
             console.log('💾 本地存储已更新，共', mergedPrompts.length, '个Prompt');
             
